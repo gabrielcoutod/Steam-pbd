@@ -89,17 +89,12 @@ def insert_app():
 
                 # TAG 
                 tgs = ast.literal_eval(i["tags"])
-                if len(tgs) == 0:
-                    if jogo.get(i["appid"]):
-                        del jogo[i["appid"]]
-                    elif dlc.get(i["appid"]):
-                        del dlc[i["appid"]]
-                    continue
-                for t, quant in tgs.items():
-                    if not tag.get(t):
-                        tag[t] = {"id":cont_tag, "assoc":[]}
-                        cont_tag += 1
-                    tag[t]["assoc"].append({"id": i["appid"], "quant": quant})
+                if len(tgs) != 0:
+                    for t, quant in tgs.items():
+                        if not tag.get(t):
+                            tag[t] = {"id":cont_tag, "assoc":[]}
+                            cont_tag += 1
+                        tag[t]["assoc"].append({"id": i["appid"], "quant": quant})
 
                 # CATEGORIES
                 cats = ast.literal_eval(i["categories"])
@@ -263,6 +258,10 @@ def insert_dlc():
     with connection.cursor() as cur:
         for id, fullgame in dlc.items():
             if not jogo.get(fullgame):
+                query = """DELETE FROM app WHERE app.id=%s;"""
+                record = (id,)
+                cur.execute(query, record)    
+                #print(f"delete performed f {id}")
                 continue
             query = """INSERT INTO Dlc (id, fk_Jogo_id) VALUES (%s, %s)"""
             record = (id, fullgame)

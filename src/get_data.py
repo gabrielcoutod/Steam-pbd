@@ -164,6 +164,7 @@ def analises_positivas_empresas():
           FROM Empresa e
           JOIN Desenvolvedora d ON e.id = d.fk_empresa_id
           JOIN App a ON d.fk_app_id = a.id
+          JOIN Jogo j ON j.id = a.id
           GROUP BY e.id
         ) subquery
         GROUP BY porcentagem_media
@@ -184,6 +185,7 @@ def analises_positivas_empresas():
           FROM Empresa e
           JOIN Desenvolvedora d ON e.id = d.fk_empresa_id
           JOIN App a ON d.fk_app_id = a.id
+          JOIN Jogo j ON j.id = a.id
           GROUP BY e.id
         ) subquery
         GROUP BY porcentagem_maxima
@@ -204,6 +206,7 @@ def analises_positivas_empresas():
           FROM Empresa e
           JOIN Desenvolvedora d ON e.id = d.fk_empresa_id
           JOIN App a ON d.fk_app_id = a.id
+          JOIN Jogo j ON j.id = a.id
           GROUP BY e.id
         ) subquery
         GROUP BY porcentagem_minima
@@ -249,7 +252,7 @@ def analise_dlcs_ano():
     ax.set_title("Diferença do preço de um jogo para o preço de suas Dlcs por ano")
     fig.savefig('data/dlcs_ano_dif_preco.png')
 
-    # THE QUERY IS CONSIDERING THE YEAR THE GAME FROM THE DLC LAUNCHED
+    # THE QUERY IS CONSIDERING THE YEAR THE GAME FROM THE DLC LAUNCHED (NOT ANYMORE)
     query2 = get("""SELECT 
           EXTRACT(YEAR FROM a.data_lancamento) AS ano,
           COUNT(DISTINCT a.id) AS num_jogos,
@@ -257,7 +260,7 @@ def analise_dlcs_ano():
           COUNT(DISTINCT d.id)::FLOAT / COUNT(DISTINCT a.id)::FLOAT AS proporcao_dlcs
         FROM 
           App a
-          LEFT JOIN Dlc d ON a.id = d.fk_jogo_id
+          LEFT JOIN Dlc d ON a.id = d.id
         GROUP BY 
           EXTRACT(YEAR FROM a.data_lancamento)
         ORDER BY 
