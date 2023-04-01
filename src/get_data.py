@@ -1,6 +1,5 @@
 import psycopg2 as pg2
 import matplotlib.pyplot as plt
-#only work in wsl
 
 connection = pg2.connect(user="user", password="1234", host="localhost", port="5432", database="postgres")
 
@@ -8,7 +7,6 @@ def get(command):
     with connection.cursor() as cur:
         cur.execute(command)
         infos = cur.fetchall()
-        #colnames = [desc[0] for desc in cur.description]
     return infos
 
 def devs_games_quant():
@@ -28,7 +26,6 @@ def devs_games_quant():
     
     fig, ax = plt.subplots(dpi=200)
     ax.plot(x, y)
-    #ax.ylim(0, 30000)
     ax.set_xlim(0,30)
     ax.set_xlabel('Quantidade de jogos')
     ax.set_ylabel('Quantidade de desenvolvedores')
@@ -39,7 +36,7 @@ def analises_por_ano():
     results = get("""
         SELECT 
             EXTRACT(YEAR FROM data_lancamento) AS ano, 
-            AVG(analises_positivas * 100.0 / (analises_positivas + analises_negativas + 1)) AS media_analises_positivas
+            AVG(analises_positivas * 100.0 / NULLIF(analises_positivas + analises_negativas, 0)) AS media_analises_positivas
         FROM App
         JOIN jogo ON jogo.id = App.id
         GROUP BY ano
@@ -51,16 +48,14 @@ def analises_por_ano():
 
     fig, ax = plt.subplots(dpi=200)
     ax.plot(anos, medias_analises_positivas)
-    #ax.ylim(0, 101)
     ax.set_xlim(1997,2023)
     ax.set_xlabel('Ano')
     ax.set_ylabel('Média de análises positivas (%)')
-    #plt.title('Percepção da qualidade dos jogos lançados ao longo do tempo')
     ax.set_title("Média de análises positivas por ano")
     fig.savefig("data/analises_positivas_por_ano.png")
 
 def analise_generos():
-    query1 = get("""SELECT Genero.nome, AVG(App.analises_positivas * 100.0 / (App.analises_positivas + App.analises_negativas + 1)::FLOAT) as media_analises_positivas
+    query1 = get("""SELECT Genero.nome, AVG(App.analises_positivas * 100.0 / NULLIF((App.analises_positivas + App.analises_negativas)::FLOAT,0)) as media_analises_positivas
                     FROM Genero 
                     JOIN Classificacao ON Genero.id = Classificacao.fk_Genero_id
                     JOIN App ON Classificacao.fk_App_id = App.id
@@ -160,7 +155,7 @@ def jogos_ptrbr():
 def analises_positivas_empresas():
     query1 = get("""SELECT COUNT(*) AS quantidade_empresas, ROUND(avg_porcentagem) AS porcentagem_media
         FROM (
-          SELECT e.id, ROUND(AVG(a.analises_positivas::numeric / (a.analises_positivas + a.analises_negativas + 1)::numeric) * 100) AS avg_porcentagem
+          SELECT e.id, ROUND(AVG(a.analises_positivas::numeric / NULLIF((a.analises_positivas + a.analises_negativas)::numeric, 0)) * 100) AS avg_porcentagem
           FROM Empresa e
           JOIN Desenvolvedora d ON e.id = d.fk_empresa_id
           JOIN App a ON d.fk_app_id = a.id
@@ -181,7 +176,7 @@ def analises_positivas_empresas():
     
     query2 = get("""SELECT COUNT(*) AS quantidade_empresas, ROUND(avg_porcentagem) AS porcentagem_maxima
         FROM (
-          SELECT e.id, ROUND(MAX(a.analises_positivas::numeric / (a.analises_positivas + a.analises_negativas + 1)::numeric) * 100) AS avg_porcentagem
+          SELECT e.id, ROUND(MAX(a.analises_positivas::numeric / NULLIF((a.analises_positivas + a.analises_negativas)::numeric,0)) * 100) AS avg_porcentagem
           FROM Empresa e
           JOIN Desenvolvedora d ON e.id = d.fk_empresa_id
           JOIN App a ON d.fk_app_id = a.id
@@ -202,7 +197,7 @@ def analises_positivas_empresas():
     
     query3 = get("""SELECT COUNT(*) AS quantidade_empresas, ROUND(avg_porcentagem) AS porcentagem_minima
         FROM (
-          SELECT e.id, ROUND(MIN(a.analises_positivas::numeric / (a.analises_positivas + a.analises_negativas + 1)::numeric) * 100) AS avg_porcentagem
+          SELECT e.id, ROUND(MIN(a.analises_positivas::numeric / NULLIF((a.analises_positivas + a.analises_negativas)::numeric, 0)) * 100) AS avg_porcentagem
           FROM Empresa e
           JOIN Desenvolvedora d ON e.id = d.fk_empresa_id
           JOIN App a ON d.fk_app_id = a.id
@@ -252,10 +247,9 @@ def analise_dlcs_ano():
     ax.set_title("Diferença do preço de um jogo para o preço de suas Dlcs por ano")
     fig.savefig('data/dlcs_ano_dif_preco.png')
 
-    # THE QUERY IS CONSIDERING THE YEAR THE GAME FROM THE DLC LAUNCHED (NOT ANYMORE)
     query2 = get("""SELECT 
           EXTRACT(YEAR FROM a.data_lancamento) AS ano,
-          COUNT(DISTINCT a.id) AS num_jogos,
+          COUNT(DISTINCT a.id) AS num_apps,
           COUNT(DISTINCT d.id) AS num_dlcs,
           COUNT(DISTINCT d.id)::FLOAT / COUNT(DISTINCT a.id)::FLOAT AS proporcao_dlcs
         FROM 
@@ -287,7 +281,7 @@ def tags_mais_populares():
             INNER JOIN Tag AS t ON t.id = t1.fk_Tag_id
             INNER JOIN App AS a ON a.id = t1.fk_App_id
             INNER JOIN JOGO AS j ON j.id = a.id
-            WHERE t1.tag_rank <= 3
+            WHERE t1.tag_rank <= 4
             GROUP BY t.nome
             ORDER BY total_analises DESC
             LIMIT 20;""")
@@ -303,7 +297,6 @@ def tags_mais_populares():
     ax.set_title("Quantidade de análises por tag (20 mais populares)")
     fig.savefig('data/quant_analises_tags_20.png')
 
-    # THE QUERY IS CONSIDERING THE YEAR THE GAME FROM THE DLC LAUNCHED (NOT ANYMORE)
     query2 = get("""SELECT t.nome AS tag, COUNT(DISTINCT a.id) AS total_analises
             FROM (
                 SELECT fk_App_id, fk_Tag_id, quantidade,
@@ -313,7 +306,7 @@ def tags_mais_populares():
             INNER JOIN Tag AS t ON t.id = t1.fk_Tag_id
             INNER JOIN App AS a ON a.id = t1.fk_App_id
             INNER JOIN JOGO AS j ON j.id = a.id
-            WHERE t1.tag_rank <= 3
+            WHERE t1.tag_rank <= 4
             GROUP BY t.nome
             ORDER BY total_analises DESC
             LIMIT 20;""")
@@ -334,17 +327,8 @@ def acessibilidade():
     query1 = get("""SELECT
             EXTRACT(YEAR FROM data_lancamento) AS ano,
             ROUND(CAST(COUNT(DISTINCT CASE WHEN categorias.nome IN 
-            				 ('Compat. total com controle', 
-            				  '部分控制器支援', 
-            				  'Compat. total con mando', 
-            				  'Partial Controller Support', 
-            				  'Контроллер (полностью)', 
-            				  'Compat. parcial con mando', 
-            				  'Full controller support', 
-            				  'Часткова підтримка контролерів', 
-            				  'フルコントローラサポート', 
-            				  'Teilweise Controllerunterstützung', 
-            				  'Контроллер (частично)') THEN app.id ELSE NULL END) AS NUMERIC) / COUNT(DISTINCT app.id) * 100, 2) AS porcentagem_controle
+            				 ('Partial Controller Support',
+            				  'Full controller support') THEN app.id ELSE NULL END) AS NUMERIC) / COUNT(DISTINCT app.id) * 100, 2) AS porcentagem_controle
             FROM
             App app
             JOIN Jogo j ON j.id=app.id
@@ -428,14 +412,11 @@ def acessibilidade():
     fig.savefig('data/jogos_idioma_ano.png')
 
 def singleplayer_multiplayer():
-    #single count
     query1 = get("""
         SELECT 
         EXTRACT(year FROM data_lancamento) AS ano, 
         ROUND(COUNT(DISTINCT CASE WHEN Categoria.nome  
-    				IN (
-    'Single-player'
-    				)
+    				IN ('Single-player')
     
     				THEN App.id END) * 100.0 / COUNT(DISTINCT App.id), 2) AS perc_singleplayer
     FROM 
@@ -448,15 +429,7 @@ def singleplayer_multiplayer():
     ORDER BY 
         ano;
     """)
-    '''
-    'Einzelspieler',
-    'Um jogador',
-    'Un jugador',
-    '單人',
-    'Для одного игрока',
-    'Однокористувацька гра',
-    'Single-player'
-    '''
+
     y = [r[1] for r in query1]
     x = [r[0] for r in query1]
     fig, ax = plt.subplots(dpi=200)
@@ -472,11 +445,9 @@ def singleplayer_multiplayer():
             SELECT 
             EXTRACT(year FROM data_lancamento) AS ano, 
             ROUND(COUNT(DISTINCT CASE WHEN Categoria.nome  
-        				IN (
-        					'Multi-player'
-        				)
+        				IN ('Multi-player')
 
-        				THEN App.id END) * 100.0 / COUNT(DISTINCT App.id), 2) AS perc_singleplayer
+        				THEN App.id END) * 100.0 / COUNT(DISTINCT App.id), 2) AS perc_multiplayer
         FROM 
             App 
         	INNER JOIN jogo j on j.id=App.id
@@ -558,7 +529,6 @@ ORDER BY ANO
     ax.set_ylabel('Quantidade de análises de jogos multi-player')
     ax.set_title("Quantidade de análises multi-player por ano")
     fig.savefig('data/multi_quant_ano.png')
-
 
 def preco_mais_populares():
     query1 = get("""
