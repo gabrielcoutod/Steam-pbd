@@ -433,12 +433,7 @@ def singleplayer_multiplayer():
     y = [r[1] for r in query1]
     x = [r[0] for r in query1]
     fig, ax = plt.subplots(dpi=200)
-    ax.plot(x, y)
-    ax.set_xlabel('Ano')
-    ax.set_xlim(1997,2023)
-    ax.set_ylabel('Porcentagem de jogos single-player (%)')
-    ax.set_title("Porcentagem de jogos single-player por ano")
-    fig.savefig('data/single_percent_ano.png')
+    ax.plot(x, y, label="Single-player")
 
     #multi count
     query2 = get("""
@@ -458,77 +453,49 @@ def singleplayer_multiplayer():
         ORDER BY 
             ano;
     """)
-    '''
-    'Multi-player',
-        'Multijogador',
-        'Для нескольких игроков',
-        'マルチプレイヤー'
-    '''
     y = [r[1] for r in query2]
     x = [r[0] for r in query2]
-    fig, ax = plt.subplots(dpi=200)
-    ax.plot(x, y)
+    ax.plot(x, y, label="Multi-player")
     ax.set_xlabel('Ano')
     ax.set_xlim(1997,2023)
-    ax.set_ylabel('Porcentagem de jogos multi-player (%)')
-    ax.set_title("Porcentagem de jogos multi-player por ano")
-    fig.savefig('data/multi_percent_ano.png')
+    ax.set_ylabel('Porcentagem de jogos (%)')
+    ax.set_title("Porcentagem de jogos por ano")
+    ax.legend()
+    fig.savefig('data/single_multi_percent_ano.png')
 
     query3 = get("""
-    SELECT A.ano, ROUND(analises*100.0/(analises_tot), 2) FROM
-(SELECT  EXTRACT(year FROM data_lancamento) AS ano,
- SUM(CASE WHEN Categoria.nome  IN ('Single-player')
-THEN app.analises_positivas + app.analises_negativas ELSE 0 END)
-as analises FROM App
-JOIN jogo on jogo.id = app.id
-INNER JOIN Categorizacao ON App.id = Categorizacao.fk_App_id 
-INNER JOIN Categoria ON Categoria.id = Categorizacao.fk_Categoria_id
- GROUP BY ano
- ORDER BY ano
-) AS A JOIN
-(SELECT EXTRACT(year FROM data_lancamento) as ano, sum(app.analises_positivas + app.analises_negativas) as analises_tot FROM APP
-JOIN jogo on jogo.id = app.id
-GROUP BY ano
-ORDER BY ANO
-) AS B ON A.ano=B.ano
+    SELECT EXTRACT(year FROM data_lancamento) as ano, SUM(CASE WHEN Categoria.nome  IN ('Single-player')
+    THEN app.analises_positivas + app.analises_negativas ELSE 0 END) as analises_tot FROM APP
+    JOIN jogo on jogo.id = app.id
+    INNER JOIN Categorizacao ON App.id = Categorizacao.fk_App_id 
+    INNER JOIN Categoria ON Categoria.id = Categorizacao.fk_Categoria_id
+    GROUP BY ano
+    ORDER BY ANO
     """)
     y = [r[1] for r in query3]
     x = [r[0] for r in query3]
     fig, ax = plt.subplots(dpi=200)
-    ax.plot(x, y)
-    ax.set_xlabel('Ano')
-    ax.set_xlim(1997,2023)
-    ax.set_ylabel('Quantidade de análises de jogos single-player')
-    ax.set_title("Quantidade de análises single-player por ano")
-    fig.savefig('data/single_quant_ano.png')
+    ax.plot(x, y, label="Single-player")
 
     query4 = get("""
-    SELECT A.ano, ROUND(analises*100.0/(analises_tot), 2) FROM
-(SELECT  EXTRACT(year FROM data_lancamento) AS ano,
- SUM(CASE WHEN Categoria.nome  IN ('Multi-player')
-THEN app.analises_positivas + app.analises_negativas ELSE 0 END)
-as analises FROM App
-JOIN jogo on jogo.id = app.id
-INNER JOIN Categorizacao ON App.id = Categorizacao.fk_App_id 
-INNER JOIN Categoria ON Categoria.id = Categorizacao.fk_Categoria_id
- GROUP BY ano
- ORDER BY ano
-) AS A JOIN
-(SELECT EXTRACT(year FROM data_lancamento) as ano, sum(app.analises_positivas + app.analises_negativas) as analises_tot FROM APP
-JOIN jogo on jogo.id = app.id
-GROUP BY ano
-ORDER BY ANO
-) AS B ON A.ano=B.ano
+    SELECT EXTRACT(year FROM data_lancamento) as ano, SUM(CASE WHEN Categoria.nome  IN ('Multi-player')
+    THEN app.analises_positivas + app.analises_negativas ELSE 0 END) as analises_tot FROM APP
+    JOIN jogo on jogo.id = app.id
+    INNER JOIN Categorizacao ON App.id = Categorizacao.fk_App_id 
+    INNER JOIN Categoria ON Categoria.id = Categorizacao.fk_Categoria_id
+    GROUP BY ano
+    ORDER BY ANO
     """)
     y = [r[1] for r in query4]
     x = [r[0] for r in query4]
-    fig, ax = plt.subplots(dpi=200)
-    ax.plot(x, y)
+    ax.plot(x, y, label="Multi-player")
+
     ax.set_xlabel('Ano')
     ax.set_xlim(1997,2023)
-    ax.set_ylabel('Quantidade de análises de jogos multi-player')
-    ax.set_title("Quantidade de análises multi-player por ano")
-    fig.savefig('data/multi_quant_ano.png')
+    ax.set_ylabel('Quantidade de análises de jogos')
+    ax.set_title("Quantidade de análises por ano")
+    ax.legend()
+    fig.savefig('data/single_multi_quant_ano.png')
 
 def preco_mais_populares():
     query1 = get("""
