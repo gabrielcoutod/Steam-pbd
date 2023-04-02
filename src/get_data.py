@@ -404,8 +404,8 @@ def acessibilidade():
     ax.plot(x, y)
     ax.set_xlabel('Ano')
     ax.set_xlim(1997,2023)
-    ax.set_ylabel('Média de idioma de jogos')
-    ax.set_title("Média de idioma de jogos por ano")
+    ax.set_ylabel('Média de idiomas de jogos')
+    ax.set_title("Média de idiomas de jogos por ano")
     fig.savefig('data/jogos_idioma_ano.png')
 
 def singleplayer_multiplayer():
