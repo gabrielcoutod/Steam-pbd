@@ -119,7 +119,6 @@ def analise_generos():
 def jogos_ptrbr():
     query1 = get("""SELECT 
                 date_part('year', data_lancamento) as ano,
-                COUNT(DISTINCT App.id) as quantidade_jogos,
                 COUNT(CASE WHEN Lingua.nome = 'Portuguese - Brazil' THEN 1 END) as quantidade_jogos_pt_br,
                 100.0 * COUNT(CASE WHEN Lingua.nome = 'Portuguese - Brazil' THEN 1 END) / COUNT(DISTINCT App.id) as porcentagem_jogos_pt_br
             FROM 
@@ -132,7 +131,7 @@ def jogos_ptrbr():
             ORDER BY 
                 ano""")
     
-    y = [r[2] for r in query1]
+    y = [r[1] for r in query1]
     x = [r[0] for r in query1]
     fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
@@ -142,7 +141,7 @@ def jogos_ptrbr():
     ax.set_title("Quantidade de jogos em PT-BR por ano")
     fig.savefig('data/pt_br_quant.png')
 
-    y = [r[3] for r in query1]
+    y = [r[2] for r in query1]
     x = [r[0] for r in query1]
     fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
@@ -249,9 +248,7 @@ def analise_dlcs_ano():
 
     query2 = get("""SELECT 
           EXTRACT(YEAR FROM a.data_lancamento) AS ano,
-          COUNT(DISTINCT a.id) AS num_apps,
-          COUNT(DISTINCT d.id) AS num_dlcs,
-          COUNT(DISTINCT d.id)::FLOAT / COUNT(DISTINCT a.id)::FLOAT AS proporcao_dlcs
+          COUNT(DISTINCT d.id)::FLOAT / COUNT(DISTINCT a.id)::FLOAT*100 AS proporcao_dlcs
         FROM 
           App a
           LEFT JOIN Dlc d ON a.id = d.id
@@ -267,8 +264,8 @@ def analise_dlcs_ano():
     ax.plot(x, y)
     ax.set_xlabel('Ano')
     ax.set_xlim(1997,2023)
-    ax.set_ylabel('Quantidade de dlcs')
-    ax.set_title("Quantidade de dlcs por ano")
+    ax.set_ylabel('Porcentagem de dlcs')
+    ax.set_title("Porcentagem de dlcs por ano")
     fig.savefig('data/dlcs_ano_quant.png')
 
 def tags_mais_populares():
@@ -417,7 +414,6 @@ def singleplayer_multiplayer():
         EXTRACT(year FROM data_lancamento) AS ano, 
         ROUND(COUNT(DISTINCT CASE WHEN Categoria.nome  
     				IN ('Single-player')
-    
     				THEN App.id END) * 100.0 / COUNT(DISTINCT App.id), 2) AS perc_singleplayer
     FROM 
         App 
@@ -441,7 +437,6 @@ def singleplayer_multiplayer():
             EXTRACT(year FROM data_lancamento) AS ano, 
             ROUND(COUNT(DISTINCT CASE WHEN Categoria.nome  
         				IN ('Multi-player')
-
         				THEN App.id END) * 100.0 / COUNT(DISTINCT App.id), 2) AS perc_multiplayer
         FROM 
             App 
