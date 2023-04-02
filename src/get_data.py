@@ -24,7 +24,7 @@ def devs_games_quant():
     x = [r[1] for r in results]
     y = [r[0] for r in results]
     
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     ax.set_xlim(0,30)
     ax.set_xlabel('Quantidade de jogos')
@@ -46,7 +46,7 @@ def analises_por_ano():
     anos = [r[0] for r in results]
     medias_analises_positivas = [r[1] for r in results]
 
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(anos, medias_analises_positivas)
     ax.set_xlim(1997,2023)
     ax.set_xlabel('Ano')
@@ -66,7 +66,7 @@ def analise_generos():
     y = [r[1] for r in query1]
     x = [r[0] for r in query1]
 
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
 
     ax.set_xlabel('Genero')
@@ -87,7 +87,7 @@ def analise_generos():
     y = [r[1] for r in query2]
     x = [r[0] for r in query2]
 
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     ax.set_xlabel('Genero')
     ax.set_ylabel('Quantidade de jogos')
@@ -107,7 +107,7 @@ def analise_generos():
     y = [r[1] for r in query3]
     x = [r[0] for r in query3]
 
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     ax.set_xlabel('Genero')
     ax.set_ylabel('Quantidade de análises')
@@ -134,7 +134,7 @@ def jogos_ptrbr():
     
     y = [r[2] for r in query1]
     x = [r[0] for r in query1]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     ax.set_xlabel('Ano')
     ax.set_xlim(1997,2023)
@@ -144,7 +144,7 @@ def jogos_ptrbr():
 
     y = [r[3] for r in query1]
     x = [r[0] for r in query1]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     ax.set_xlabel('Ano')
     ax.set_ylabel('Porcentagem de jogos em PT-BR (%)')
@@ -167,7 +167,7 @@ def analises_positivas_empresas():
     
     y = [r[0] for r in query1]
     x = [r[1] for r in query1]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     ax.set_xlabel('Porcentagem de análises positivas (%)')
     ax.set_ylabel('Quantidade de empresas')
@@ -188,7 +188,7 @@ def analises_positivas_empresas():
     
     y = [r[0] for r in query2]
     x = [r[1] for r in query2]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     ax.set_xlabel('Porcentagem de análises positivas (%)')
     ax.set_ylabel('Quantidade de empresas')
@@ -209,7 +209,7 @@ def analises_positivas_empresas():
     
     y = [r[0] for r in query3]
     x = [r[1] for r in query3]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     ax.set_xlabel('Porcentagem de análises positivas (%)')
     ax.set_ylabel('Quantidade de empresas')
@@ -239,7 +239,7 @@ def analise_dlcs_ano():
     
     y = [r[1] for r in query1]
     x = [r[0] for r in query1]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     ax.set_xlabel('Ano')
     ax.set_xlim(1997,2023)
@@ -263,7 +263,7 @@ def analise_dlcs_ano():
 
     y = [r[1] for r in query2]
     x = [r[0] for r in query2]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     ax.set_xlabel('Ano')
     ax.set_xlim(1997,2023)
@@ -288,7 +288,7 @@ def tags_mais_populares():
     
     y = [r[1] for r in query1]
     x = [r[0] for r in query1]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     plt.setp(ax.get_xticklabels(), rotation=40, ha='right')
     plt.xticks(fontsize=4)
@@ -314,7 +314,7 @@ def tags_mais_populares():
 
     y = [r[1] for r in query2]
     x = [r[0] for r in query2]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     plt.setp(ax.get_xticklabels(), rotation=40, ha='right')
     plt.xticks(fontsize=4)
@@ -341,7 +341,7 @@ def acessibilidade():
     
     y = [r[1] for r in query1]
     x = [r[0] for r in query1]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     ax.set_xlabel('Ano')
     ax.set_xlim(1997,2023)
@@ -363,7 +363,7 @@ def acessibilidade():
     
     y = [r[1] for r in query2]
     x = [r[0] for r in query2]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     ax.set_xlabel('Ano')
     ax.set_xlim(1997,2023)
@@ -385,7 +385,7 @@ def acessibilidade():
     
     y = [r[1] for r in query3]
     x = [r[0] for r in query3]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     ax.set_xlabel('Ano')
     ax.set_xlim(1997,2023)
@@ -403,7 +403,7 @@ def acessibilidade():
     
     y = [r[1] for r in query4]
     x = [r[0] for r in query4]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     ax.set_xlabel('Ano')
     ax.set_xlim(1997,2023)
@@ -432,7 +432,7 @@ def singleplayer_multiplayer():
 
     y = [r[1] for r in query1]
     x = [r[0] for r in query1]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y, label="Single-player")
 
     #multi count
@@ -474,7 +474,7 @@ def singleplayer_multiplayer():
     """)
     y = [r[1] for r in query3]
     x = [r[0] for r in query3]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y, label="Single-player")
 
     query4 = get("""
@@ -520,7 +520,7 @@ def preco_mais_populares():
 
     y = [r[1] for r in query1]
     x = [r[0] for r in query1]
-    fig, ax = plt.subplots(dpi=200)
+    fig, ax = plt.subplots(dpi=300)
     ax.plot(x, y)
     ax.set_xlabel('Porcentagem dos jogos mais populares (%)')
     ax.set_ylabel('Média de preço dos jogos')
