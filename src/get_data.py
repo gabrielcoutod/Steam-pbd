@@ -220,8 +220,8 @@ def analise_dlcs_ano():
     query1 = get("""SELECT 
                     EXTRACT(YEAR FROM a.data_lancamento) AS ano_lancamento,
                     AVG(a.preco - COALESCE(dlc_total.preco_total, 0)) AS media_diff_preco_dlc
-                FROM 
-                    App a
+                FROM App a
+                JOIN Jogo j ON j.id = a.id
                 LEFT JOIN 
                     (
                         SELECT 
@@ -297,7 +297,7 @@ def tags_mais_populares():
     ax.set_title("Quantidade de análises por tag (20 mais populares)")
     fig.savefig('data/quant_analises_tags_20.png')
 
-    query2 = get("""SELECT t.nome AS tag, COUNT(DISTINCT a.id) AS total_analises
+    query2 = get("""SELECT t.nome AS tag, COUNT(DISTINCT a.id) AS quant_jogos
             FROM (
                 SELECT fk_App_id, fk_Tag_id, quantidade,
                 ROW_NUMBER() OVER (PARTITION BY fk_App_id ORDER BY quantidade DESC) AS tag_rank
@@ -308,7 +308,7 @@ def tags_mais_populares():
             INNER JOIN JOGO AS j ON j.id = a.id
             WHERE t1.tag_rank <= 4
             GROUP BY t.nome
-            ORDER BY total_analises DESC
+            ORDER BY quant_jogos DESC
             LIMIT 20;""")
     
 
@@ -499,17 +499,25 @@ def singleplayer_multiplayer():
 
 def preco_mais_populares():
     query1 = get("""
-            WITH jogos_populares AS (
-            SELECT App.id, nome, preco, analises_positivas, analises_negativas, 
-                NTILE(100) OVER (ORDER BY analises_positivas + analises_negativas DESC) AS quartil
-            FROM App
-            JOIN JOGO j on j.id=App.id
-        )
-        SELECT quartil, ROUND(AVG(preco)::NUMERIC, 2) AS media_preco
-        FROM jogos_populares
-        GROUP BY quartil
-        ORDER BY quartil ASC;
+    WITH jogos_populares AS (
+        SELECT 
+            App.id, 
+            preco, 
+            NTILE(100) OVER (ORDER BY analises_positivas + analises_negativas DESC) AS conj
+        FROM App
+        JOIN JOGO j on j.id=App.id
+    )
+    SELECT 
+        t.conj,
+        (SELECT ROUND(AVG(preco)::NUMERIC, 2) AS media_preco
+            FROM jogos_populares
+            WHERE  jogos_populares.conj <= t.conj
+        ) AS media_preco
+    FROM
+    (SELECT DISTINCT conj FROM jogos_populares) AS t
+    ORDER BY t.conj ASC;
     """)
+
     y = [r[1] for r in query1]
     x = [r[0] for r in query1]
     fig, ax = plt.subplots(dpi=200)
