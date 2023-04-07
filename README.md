@@ -2,7 +2,7 @@
 
 ## Scripts
 The scripts directory contains the project scripts.
-* install.sh: contains docker commands to start postgres containers.
+* install.sh: contains docker commands to start postgres containers (may require tweaking).
 * start.sh: starts the docker containers.
 * stop.sh: stops the docker containers.
 * insert.sh: creates tables and inserts data from data/steam_final.csv into the tables.
