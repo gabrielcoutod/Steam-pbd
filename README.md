@@ -16,3 +16,6 @@ The data directory contains the data from Steam.
 
 ## Src
 The src directory contains the python code for inserting data, performing queries and creating graphics.
+
+## Data Collection
+Tutorial on how to collect Steam data https://nik-davis.github.io/posts/2019/steam-data-collection/.
