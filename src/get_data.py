@@ -2,6 +2,7 @@ import psycopg2 as pg2
 import matplotlib.pyplot as plt
 
 connection = pg2.connect(user="user", password="1234", host="localhost", port="5432", database="postgres")
+plt.rcParams.update({'figure.max_open_warning': 0})
 
 def get(command):
     with connection.cursor() as cur:
@@ -55,7 +56,7 @@ def analises_por_ano():
     fig.savefig("data/analises_positivas_por_ano.png")
 
 def analise_generos():
-    query1 = get("""SELECT Genero.nome, AVG(App.analises_positivas * 100.0 / NULLIF((App.analises_positivas + App.analises_negativas)::FLOAT,0)) as media_analises_positivas
+    query1 = get("""SELECT Genero.nome, AVG(App.analises_positivas * 100.0 / NULLIF((App.analises_positivas + App.analises_negativas)::numeric,0)) as media_analises_positivas
                     FROM Genero 
                     JOIN Classificacao ON Genero.id = Classificacao.fk_Genero_id
                     JOIN App ON Classificacao.fk_App_id = App.id
